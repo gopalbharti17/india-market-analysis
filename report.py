@@ -101,7 +101,7 @@ def generate(
   </div>
   <div style="display:flex;gap:10px;align-items:center">
     <span id="statusDot" style="font-size:.8rem;color:#aab"></span>
-    <button id="runBtn" onclick="runAnalysis()">▶ Run Analysis</button>
+    <button id="runBtn" onclick="runAnalysis()" style="display:none">▶ Run Analysis</button>
   </div>
 </div>
 
@@ -395,6 +395,11 @@ renderStocks();
 renderFunds();
 renderChanges(CHANGES.stock, 'stockChanges');
 renderChanges(CHANGES.fund,  'fundChanges');
+
+// Show Run button only when the local server is reachable
+fetch('/api/status').then(r => r.json())
+  .then(() => {{ document.getElementById('runBtn').style.display = 'inline-block'; }})
+  .catch(() => {{}});
 </script>
 </body>
 </html>"""
