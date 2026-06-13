@@ -1,0 +1,8 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+market_cache.db
+screener_export.xlsx
+*.egg-info/
+.env

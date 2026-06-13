@@ -1,0 +1,42 @@
+name: Daily Market Report
+
+on:
+  schedule:
+    - cron: '30 3 * * 1-5'   # 9:00 AM IST, Monday–Friday
+  workflow_dispatch:            # also allows manual trigger from GitHub UI
+
+permissions:
+  contents: write
+
+jobs:
+  run-analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # full history so research_history.db is preserved
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run analysis pipeline
+        run: python main.py
+
+      - name: Copy report to index.html for GitHub Pages
+        run: cp report.html index.html
+
+      - name: Commit and push results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add report.html index.html stock_rankings.csv mf_rankings.csv research_history.db
+          git diff --staged --quiet || git commit -m "report: $(date -u '+%Y-%m-%d') market analysis"
+          git push
